@@ -6,6 +6,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -31,13 +33,24 @@ public class MainActivity extends AppCompatActivity {
 
     BluetoothAdapter btAdt;
     final int ENABLE_RQ=100;
+    Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //1. ÀË¬d¬O§_¦³¤ä´©ÂÅ¤ú¸Ë¸m¡A­Y¦³¡A¶}±ÒÂÅ¤ú
+        //1. æª¢æŸ¥æ˜¯å¦æœ‰æ”¯æ´è—ç‰™è£ç½®ï¼Œè‹¥æœ‰ï¼Œé–‹å•Ÿè—ç‰™
         findviews();
+        handler=new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                btnDiscoverable.setText(String.valueOf(msg.what));
+                if(msg.what==0){
+                    btnDiscoverable.setText("å¯è¢«æœå°‹");
+                }
+            }
+        };
         setBT();
         registBroadcast();
     }
@@ -58,11 +71,11 @@ public class MainActivity extends AppCompatActivity {
         etInput=(EditText)findViewById(R.id.editText);
     }
 
-    //¥ı¨ú±o¬O§_¦³ÂÅ¤ú¡A¦A¨ÌÂÅ¤ú¬O§_¶}±Ò³]©wswitchªº¶}Ãö
+    //å…ˆå–å¾—æ˜¯å¦æœ‰è—ç‰™ï¼Œå†ä¾è—ç‰™æ˜¯å¦é–‹å•Ÿè¨­å®šswitchçš„é–‹é—œ
     void setBT(){
         btAdt=BluetoothAdapter.getDefaultAdapter();
         if(btAdt==null){
-            Toast.makeText(this,"³o­Ó¸Ë¸m¨S¦³¤ä´©ÂÅ¤ú",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"é€™å€‹è£ç½®æ²’æœ‰æ”¯æ´è—ç‰™",Toast.LENGTH_SHORT).show();
             return;
         }
         if(btAdt.isEnabled()){
@@ -106,21 +119,9 @@ public class MainActivity extends AppCompatActivity {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    for(int i=resultCode;i>=0;i--){                        
-                        btnDiscoverable.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                
-                            }
-                        });
-                        
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                btnDiscoverable.setText(String.valueOf(i));
-                            }
-                        });
-                        
+                    for(int i=resultCode;i>=0;i--){
+                        handler.sendEmptyMessage(i);
+
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException e) {
@@ -133,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     ArrayAdapter<String> arrayAdapter;
-    //2. ¬d¸ß¥»¾÷¤w°t¹ïªºÂÅ¤ú¸Ë¸m
+    //2. æŸ¥è©¢æœ¬æ©Ÿå·²é…å°çš„è—ç‰™è£ç½®
     void queryPairedDevice(){
         arrayAdapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -146,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    //3. ·j´M·sªºÂÅ¤ú¸Ë¸m
+    //3. æœå°‹æ–°çš„è—ç‰™è£ç½®
     class MyReciver extends BroadcastReceiver{
         ArrayAdapter<String> lvAdt=new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_list_item_1);
 
@@ -154,10 +155,10 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             String action=intent.getAction();
             if(action.equals(BluetoothAdapter.ACTION_DISCOVERY_STARTED)){
-                Toast.makeText(MainActivity.this,"¶}©l·j´M¸Ë¸m",Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this,"é–‹å§‹æœå°‹è£ç½®",Toast.LENGTH_SHORT).show();
             }
             if(action.equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)){
-                Toast.makeText(MainActivity.this,"µ²§ô·j´M¸Ë¸m",Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this,"çµæŸæœå°‹è£ç½®",Toast.LENGTH_SHORT).show();
                 lvDevice.setAdapter(lvAdt);
             }
             if(action.equals(BluetoothDevice.ACTION_FOUND)){
@@ -169,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     MyReciver mr;
-    //°ÊºAªº¼s¼½¦r¦êµù¥U
+    //å‹•æ…‹çš„å»£æ’­å­—ä¸²è¨»å†Š
     void registBroadcast(){
         mr=new MyReciver();
         IntentFilter filter=new IntentFilter();
@@ -182,20 +183,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    //Åı¤â¾÷¥i³Q·j´M
+    //è®“æ‰‹æ©Ÿå¯è¢«æœå°‹
     final int DISCOVERABLE_RQ=101;
     public void onDiscoverable(View v){
         Intent intent=new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-        //³]©w¥i³Q·j´Mªº¬í¼Æ¡A¹w³]¬O120¬í
-        intent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION,120);
-        startActivity(intent); //³o­Ó Intent ·|§â³]©wªº¬í¼Æ¶Ç¨ì onActivityResult ªºresultCode
+        //è¨­å®šå¯è¢«æœå°‹çš„ç§’æ•¸ï¼Œé è¨­æ˜¯120ç§’
+        intent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION,30);
+        startActivityForResult(intent,DISCOVERABLE_RQ); //é€™å€‹ Intent æœƒæŠŠè¨­å®šçš„ç§’æ•¸å‚³åˆ° onActivityResult çš„resultCode
     }
 
-    //4. ³s½uÂÅ¤ú
 
-
-
+    //4. é€£ç·šè—ç‰™
     public void onDiscovery(View v){
+        if(btAdt==null){
+            return;
+        }        
+        btAdt.startDiscovery();
 
     }
 
