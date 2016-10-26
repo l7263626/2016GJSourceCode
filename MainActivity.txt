@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
     };
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==ENABLE_RQ){
             if(resultCode==RESULT_OK){
@@ -100,6 +100,17 @@ public class MainActivity extends AppCompatActivity {
                 arrayAdapter.clear();
                 spPaired.setAdapter(arrayAdapter);
             }
+        }
+
+        if(requestCode==DISCOVERABLE_RQ){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for(int i=resultCode;i>=0;i--){
+                        btnDiscoverable.setText(String.valueOf(i));
+                    }
+                }
+            }).start();
         }
     }
 
@@ -152,8 +163,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    
+
     //讓手機可被搜尋
+    final int DISCOVERABLE_RQ=101;
     public void onDiscoverable(View v){
         Intent intent=new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
         //設定可被搜尋的秒數，預設是120秒
