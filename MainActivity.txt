@@ -2,6 +2,8 @@ package com.hui.class12_bluetooth;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothServerSocket;
+import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -22,7 +24,9 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.Set;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
     Switch aSwitch;
@@ -148,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
         spPaired.setAdapter(arrayAdapter);
 
     }
-    
+
     AdapterView.OnItemSelectedListener spListener=new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -185,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-    
+
     AdapterView.OnItemClickListener lvClick=new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -229,8 +233,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    
-    
+
+
     //4. 連線藍牙
 
     public void onConnection(View v){
@@ -240,4 +244,24 @@ public class MainActivity extends AppCompatActivity {
     public void onSubmit(View v){
 
     }
+
+    //當Server
+    class ReadTask implements Runnable{
+
+        @Override
+        //次執行緒執行的方法
+        public void run() {
+            String strUUID="00001101-0000-1000-8000-00805F9B34FB";
+            try {
+                BluetoothServerSocket serverSocket=btAdt.listenUsingRfcommWithServiceRecord("Server", UUID.fromString(strUUID));
+                BluetoothSocket socket=serverSocket.accept();
+                
+                
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
 }
