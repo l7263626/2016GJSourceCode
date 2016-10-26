@@ -106,8 +106,26 @@ public class MainActivity extends AppCompatActivity {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    for(int i=resultCode;i>=0;i--){
-                        btnDiscoverable.setText(String.valueOf(i));
+                    for(int i=resultCode;i>=0;i--){                        
+                        btnDiscoverable.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                
+                            }
+                        });
+                        
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                btnDiscoverable.setText(String.valueOf(i));
+                            }
+                        });
+                        
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }).start();
@@ -170,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent=new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
         //設定可被搜尋的秒數，預設是120秒
         intent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION,120);
-        startActivity(intent);
+        startActivity(intent); //這個 Intent 會把設定的秒數傳到 onActivityResult 的resultCode
     }
 
     //4. 連線藍牙
