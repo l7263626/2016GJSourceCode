@@ -116,7 +116,10 @@ public class MainActivity extends AppCompatActivity {
             if(resultCode==RESULT_OK){
                 btAdt.enable();
                 aSwitch.setChecked(true);
-                queryPairedDevice();
+                queryPairedDevice();                
+                
+                //啟動Server接聽Client
+                new Thread(new ReadTask()).start();
             }else{
                 btAdt.disable();
                 aSwitch.setChecked(false);
@@ -241,8 +244,6 @@ public class MainActivity extends AppCompatActivity {
 
     String strUUID="00001101-0000-1000-8000-00805F9B34FB";
     public void onConnection(View v){
-        new Thread(new ReadTask()).start();//啟動Server接聽Client
-        
         //當Client的連線
         BluetoothDevice btDevice=btAdt.getRemoteDevice(tvMacAdd.getText().toString());
         try {
