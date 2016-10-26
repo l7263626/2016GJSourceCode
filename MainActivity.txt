@@ -162,7 +162,6 @@ public class MainActivity extends AppCompatActivity {
             String strMac=((TextView)view).getText().toString();
             String mac=strMac.substring(strMac.length()-17,strMac.length());
             tvMacAdd.setText(mac);
-//            BluetoothDevice btDevice=btAdt.getRemoteDevice(mac);
         }
 
         @Override
@@ -240,7 +239,18 @@ public class MainActivity extends AppCompatActivity {
 
     //4. 連線藍牙
 
+    String strUUID="00001101-0000-1000-8000-00805F9B34FB";
     public void onConnection(View v){
+        new Thread(new ReadTask()).start();//啟動Server接聽Client
+        
+        //當Client的連線
+        BluetoothDevice btDevice=btAdt.getRemoteDevice(tvMacAdd.getText().toString());
+        try {
+            BluetoothSocket socket=btDevice.createRfcommSocketToServiceRecord(UUID.fromString(strUUID));
+            socket.connect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -255,17 +265,17 @@ public class MainActivity extends AppCompatActivity {
         @Override
         //次執行緒執行的方法
         public void run() {
-            String strUUID="00001101-0000-1000-8000-00805F9B34FB";
+            
             try {
                 BluetoothServerSocket serverSocket=btAdt.listenUsingRfcommWithServiceRecord("Server", UUID.fromString(strUUID));
                 BluetoothSocket socket=serverSocket.accept();
-                
+
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
                         Toast.makeText(MainActivity.this,"有人連線進來了...",Toast.LENGTH_SHORT).show();
                     }
-                });  
+                });
                 serverSocket.close();
 
                 //接收Client的資料
