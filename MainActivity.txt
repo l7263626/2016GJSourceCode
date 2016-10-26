@@ -1,0 +1,179 @@
+package com.hui.class12_bluetooth;
+
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.Set;
+
+public class MainActivity extends AppCompatActivity {
+    Switch aSwitch;
+    Button btnDiscoverable;
+    TextView tvMacAdd;
+    Spinner spPaired;
+    ListView lvDevice;
+    EditText etInput;
+
+    BluetoothAdapter btAdt;
+    final int ENABLE_RQ=100;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        //1. 檢查是否有支援藍牙裝置，若有，開啟藍牙
+        findviews();
+        setBT();
+        registBroadcast();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(mr);
+    }
+
+    void findviews(){
+        aSwitch=(Switch)findViewById(R.id.switch1);
+        aSwitch.setOnCheckedChangeListener(onCheckedChangeListener);
+        btnDiscoverable=(Button)findViewById(R.id.button4);
+        tvMacAdd=(TextView)findViewById(R.id.textView);
+        spPaired=(Spinner)findViewById(R.id.spinner);
+        lvDevice=(ListView)findViewById(R.id.listView);
+        etInput=(EditText)findViewById(R.id.editText);
+    }
+
+    //先取得是否有藍牙，再依藍牙是否開啟設定switch的開關
+    void setBT(){
+        btAdt=BluetoothAdapter.getDefaultAdapter();
+        if(btAdt==null){
+            Toast.makeText(this,"這個裝置沒有支援藍牙",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(btAdt.isEnabled()){
+            aSwitch.setChecked(true);
+        }else{
+            aSwitch.setChecked(false);
+        }
+    }
+
+    CompoundButton.OnCheckedChangeListener onCheckedChangeListener=new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+            if(b){
+//                btAdt.enable();
+                Intent intent=new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(intent,ENABLE_RQ);
+            }else{
+                btAdt.disable();
+                aSwitch.setChecked(b);
+            }
+        }
+    };
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==ENABLE_RQ){
+            if(resultCode==RESULT_OK){
+                btAdt.enable();
+                aSwitch.setChecked(true);
+                queryPairedDevice();
+            }else{
+                btAdt.disable();
+                aSwitch.setChecked(false);
+                arrayAdapter.clear();
+                spPaired.setAdapter(arrayAdapter);
+            }
+        }
+    }
+
+    ArrayAdapter<String> arrayAdapter;
+    //2. 查詢本機已配對的藍牙裝置
+    void queryPairedDevice(){
+        arrayAdapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item);
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        Set<BluetoothDevice> devices=btAdt.getBondedDevices();
+        for(BluetoothDevice device:devices){
+            arrayAdapter.add(device.getName()+" - "+device.getAddress());
+        }
+        spPaired.setAdapter(arrayAdapter);
+
+    }
+
+
+    //3. 搜尋新的藍牙裝置
+    class MyReciver extends BroadcastReceiver{
+        ArrayAdapter<String> lvAdt=new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_list_item_1);
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action=intent.getAction();
+            if(action.equals(BluetoothAdapter.ACTION_DISCOVERY_STARTED)){
+                Toast.makeText(MainActivity.this,"開始搜尋裝置",Toast.LENGTH_SHORT).show();
+            }
+            if(action.equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)){
+                Toast.makeText(MainActivity.this,"結束搜尋裝置",Toast.LENGTH_SHORT).show();
+                lvDevice.setAdapter(lvAdt);
+            }
+            if(action.equals(BluetoothDevice.ACTION_FOUND)){
+                BluetoothDevice device=intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                lvAdt.add(device.getName()+" - "+device.getAddress());
+            }
+        }
+    }
+
+
+    MyReciver mr;
+    //動態的廣播字串註冊
+    void registBroadcast(){
+        mr=new MyReciver();
+        IntentFilter filter=new IntentFilter();
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        filter.addAction(BluetoothDevice.ACTION_FOUND);
+
+        registerReceiver(mr,filter);
+
+    }
+
+    
+    //讓手機可被搜尋
+    public void onDiscoverable(View v){
+        Intent intent=new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+        //設定可被搜尋的秒數，預設是120秒
+        intent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION,120);
+        startActivity(intent);
+    }
+
+    //4. 連線藍牙
+
+
+
+    public void onDiscovery(View v){
+
+    }
+
+    public void onConnection(View v){
+
+    }
+
+    public void onSubmit(View v){
+
+    }
+}
