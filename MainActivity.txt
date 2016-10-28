@@ -28,12 +28,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.Set;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
     Switch aSwitch;
-    Button btnDiscoverable;
+    Button btnDiscoverable,btnConnection;
     TextView tvMacAdd;
     Spinner spPaired;
     ListView lvDevice;
@@ -73,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         aSwitch=(Switch)findViewById(R.id.switch1);
         aSwitch.setOnCheckedChangeListener(onCheckedChangeListener);
         btnDiscoverable=(Button)findViewById(R.id.button4);
+        btnConnection=(Button)findViewById(R.id.button2); 
         tvMacAdd=(TextView)findViewById(R.id.textView);
         spPaired=(Spinner)findViewById(R.id.spinner);
         spPaired.setOnItemSelectedListener(spListener);
@@ -116,8 +118,8 @@ public class MainActivity extends AppCompatActivity {
             if(resultCode==RESULT_OK){
                 btAdt.enable();
                 aSwitch.setChecked(true);
-                queryPairedDevice();                
-                
+                queryPairedDevice();
+
                 //啟動Server接聽Client
                 new Thread(new ReadTask()).start();
             }else{
@@ -243,19 +245,42 @@ public class MainActivity extends AppCompatActivity {
     //4. 連線藍牙
 
     String strUUID="00001101-0000-1000-8000-00805F9B34FB";
+    BluetoothSocket socket;
+    boolean isConnect=false;
     public void onConnection(View v){
         //當Client的連線
         BluetoothDevice btDevice=btAdt.getRemoteDevice(tvMacAdd.getText().toString());
         try {
-            BluetoothSocket socket=btDevice.createRfcommSocketToServiceRecord(UUID.fromString(strUUID));
-            socket.connect();
+            if(isConnect) {
+                socket.close();
+                isConnect=false;
+                btnConnection.setText("連線");
+            }else{
+                socket=btDevice.createRfcommSocketToServiceRecord(UUID.fromString(strUUID));
+                socket.connect();
+                isConnect=true;
+                btnConnection.setText("斷線");
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
 
+    //送出資料
     public void onSubmit(View v){
+        if(socket==null){
+            return;
+        }
+        try {
+            OutputStream os=socket.getOutputStream();
+            os.write((etInput.getText().toString()+"\n").getBytes());
+            os.flush();
+//            os.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -266,7 +291,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         //次執行緒執行的方法
         public void run() {
-            
+
             try {
                 BluetoothServerSocket serverSocket=btAdt.listenUsingRfcommWithServiceRecord("Server", UUID.fromString(strUUID));
                 BluetoothSocket socket=serverSocket.accept();
