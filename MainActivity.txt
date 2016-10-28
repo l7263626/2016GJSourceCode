@@ -188,11 +188,12 @@ public class MainActivity extends AppCompatActivity {
             }
             if(action.equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)){
                 Toast.makeText(MainActivity.this,"結束搜尋裝置",Toast.LENGTH_SHORT).show();
-                lvDevice.setAdapter(lvAdt);
+//                lvDevice.setAdapter(lvAdt);
             }
             if(action.equals(BluetoothDevice.ACTION_FOUND)){
                 BluetoothDevice device=intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 lvAdt.add(device.getName()+" - "+device.getAddress());
+                lvDevice.setAdapter(lvAdt);
             }
         }
     }
@@ -325,6 +326,114 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
+    }
+    
+    
+    //===================================================
+    void sendMsg(){
+        try {
+            if(socket==null){
+                Toast.makeText(this,"socket is null",Toast.LENGTH_SHORT).show();
+                return;
+            }
+            OutputStream os=socket.getOutputStream();
+            os.write((etInput.getText().toString()+"\n").getBytes());
+            os.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //以下兩個方法是傳送及接送「圖片」的做法概念
+    void sendPicture(){
+        try {
+            InputStream is=getAssets().open("mushroom.png");
+            byte[] buffer=new byte[is.available()];
+            is.read(buffer);
+            is.close();
+
+            OutputStream os=socket.getOutputStream();
+            os.write(buffer);
+            os.flush();
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void showdPicture(){
+        try {
+            Bitmap bmp= BitmapFactory.decodeStream(socket.getInputStream());
+            ImageView image=new ImageView(this);
+            image.setImageBitmap(bmp);
+
+            Toast toast=new Toast(this);
+            toast.setView(image);
+            toast.setDuration(Toast.LENGTH_LONG);
+            toast.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    //以下兩個方法是傳送及接送「檔案」的做法概念
+    void sendFile(int type,String fileName ){
+        try {
+            //讀檔
+            InputStream is=getAssets().open("mushroom.png");
+            byte[] buffer=new byte[is.available()];
+            is.read(buffer);
+            is.close();
+            //傳送檔案名稱
+            OutputStream os=socket.getOutputStream();
+            os.write(fileName.getBytes());
+            os.flush();
+
+            //傳送檔案主體
+            os.write(buffer);
+            os.flush();
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void receiverFile(){
+        String fileName=null;
+        byte[] filebytes=null;
+        //讀檔名
+        try {
+            InputStream is =socket.getInputStream();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //讀檔案主體
+        try {
+            InputStream is=socket.getInputStream();
+            is.read(filebytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        //寫出檔案
+        File path= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File file=new File(path,fileName);
+        try {
+            FileOutputStream fos=new FileOutputStream(file);
+            fos.write(filebytes);
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e){
+
+        }
+
     }
 
 }
