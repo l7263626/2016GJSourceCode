@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         aSwitch=(Switch)findViewById(R.id.switch1);
         aSwitch.setOnCheckedChangeListener(onCheckedChangeListener);
         btnDiscoverable=(Button)findViewById(R.id.button4);
-        btnConnection=(Button)findViewById(R.id.button2); 
+        btnConnection=(Button)findViewById(R.id.button2);
         tvMacAdd=(TextView)findViewById(R.id.textView);
         spPaired=(Spinner)findViewById(R.id.spinner);
         spPaired.setOnItemSelectedListener(spListener);
@@ -294,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 BluetoothServerSocket serverSocket=btAdt.listenUsingRfcommWithServiceRecord("Server", UUID.fromString(strUUID));
-                BluetoothSocket socket=serverSocket.accept();
+                socket=serverSocket.accept();
 
                 handler.post(new Runnable() {
                     @Override
