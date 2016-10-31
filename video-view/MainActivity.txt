@@ -1,6 +1,7 @@
 package com.hui.class15_mediaplayer;
 
 import android.media.MediaPlayer;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,9 @@ import android.widget.CheckBox;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.IOException;
+
 public class MainActivity extends AppCompatActivity {
     SeekBar seekBar;
     TextView tvTime;
@@ -19,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     CheckBox cbIsLoop;
     MediaPlayer mp;
     Handler handler;
+    int duration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,20 +35,22 @@ public class MainActivity extends AppCompatActivity {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 seekBar.setProgress(msg.what);
+                tvTime.setText(msg.what/1000+" / "+(duration/1000));
             }
         };
     }
 
     void findviews(){
         seekBar=(SeekBar)findViewById(R.id.seekBar);
+        seekBar.setOnSeekBarChangeListener(seekBarChangeListener);
         tvTime=(TextView)findViewById(R.id.textView);
         btnPlay=(Button)findViewById(R.id.button);
         cbIsLoop=(CheckBox)findViewById(R.id.checkBox);
     }
 
     public void onPlay(View v){
-        staticPlayer();
-
+//        staticPlayer();
+        callExternal();
     }
 
     void staticPlayer(){
@@ -62,6 +69,42 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    void callExternal(){
+        File path= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
+        File file=new File(path,"littlemonster.3gp"); //取得外部路徑檔案
+        if(mp==null){
+            mp=new MediaPlayer();
+            try {
+                mp.setDataSource(file.toString());  //設定多媒體檔案來源
+                mp.prepare();  //把檔案載到記憶體中
+                mp.start();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        timeSeekBar();
+                    }
+                }).start();
+                btnPlay.setText("暫停");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else {
+            if (mp.isPlaying()) {
+                mp.pause();
+                btnPlay.setText("播放");
+            } else {
+                mp.start();
+                btnPlay.setText("暫停");
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        timeSeekBar();
+                    }
+                }).start();
+            }
+        }
+    }
+
     public void onStop(View v){
         if(mp!=null) {
             mp.stop();
@@ -70,6 +113,42 @@ public class MainActivity extends AppCompatActivity {
             btnPlay.setText("播放");
         }
     }
+
+    void timeSeekBar(){
+        if(mp!=null) {
+            duration = mp.getDuration();
+            seekBar.setMax(duration); //取得這首歌的總長度millisecond
+            while(mp!=null && mp.isPlaying()) {
+                //把現在播放的秒數更新到SeekBar
+                handler.sendEmptyMessage(mp.getCurrentPosition());
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
+
+    SeekBar.OnSeekBarChangeListener seekBarChangeListener=new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            if(fromUser){
+                mp.seekTo(progress);
+            }
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+
+        }
+    };
 
     public void onRaise(View v){
 
