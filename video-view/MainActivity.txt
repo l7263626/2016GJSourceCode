@@ -129,15 +129,7 @@ public class MainActivity extends AppCompatActivity {
                 mp.setDataSource(strUrl);
                 mp.setDisplay(surfaceHolder);  //利用SurfaceView來播放影像
                 //把檔案用非同步的方式載到記憶體中
-                mp.prepareAsync();
-                mp.start();
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        timeSeekBar();
-                    }
-                }).start();
-                btnPlay.setText("暫停");
+                mp.prepareAsync();                
             } catch (IOException e) {
                 e.printStackTrace();
             }
