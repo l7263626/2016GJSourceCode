@@ -3,6 +3,7 @@ package com.hui.class15_mediaplayer;
 import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -32,23 +33,36 @@ public class MainActivity extends AppCompatActivity {
 
     public void onPlay(View v){
         staticPlayer();
-        
+
     }
     public void onStop(View v){
         if(mp!=null) {
+            Log.d("Media",mp.toString());
             mp.stop();
+            mp.release();
+            mp=null;
+            btnPlay.setText("¼½©ñ");
         }
     }
-    
+
     void staticPlayer(){
         if(mp==null) {
             mp = MediaPlayer.create(this, R.raw.littlemonster);
             mp.start();
+            btnPlay.setText("¼È°±");
+        }else {
+            if (mp.isPlaying()) {
+                mp.pause();
+                btnPlay.setText("¼½©ñ");
+            } else {
+                mp.start();
+                btnPlay.setText("¼È°±");
+            }
         }
     }
-    
-    
-    
+
+
+
     public void onRaise(View v){
 
     }
