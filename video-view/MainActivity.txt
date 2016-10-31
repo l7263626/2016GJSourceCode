@@ -58,7 +58,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void onPlay(View v){
 //        staticPlayer();
-        callExternal();
+//        callExternal();
+        callInternet();
     }
 
     void staticPlayer(){
@@ -80,8 +81,10 @@ public class MainActivity extends AppCompatActivity {
     void callExternal(){
         File path= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
         File file=new File(path,"littlemonster.3gp"); //取得外部路徑檔案
+
         if(mp==null){
             mp=new MediaPlayer();
+            mp.setOnPreparedListener(preparedListener);
             try {
                 mp.setDataSource(file.toString());  //設定多媒體檔案來源
                 mp.setDisplay(surfaceHolder);  //利用SurfaceView來播放影像
@@ -114,6 +117,48 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    void callInternet(){
+        //多媒體檔案的網址
+        String strUrl="http://www.youtube-mp3.org/get?video_id=9lZu4d_S-BM&ts_create=1477919756&r=MTIyLjExNy45LjE3NQ%3D%3D&h2=bbefc01a755252270d0b28e246bc56ab&s=151349";
+
+        if(mp==null){
+            mp=new MediaPlayer();
+            mp.setOnPreparedListener(preparedListener);
+            try {
+                //設定多媒體檔案來源
+                mp.setDataSource(strUrl);
+                mp.setDisplay(surfaceHolder);  //利用SurfaceView來播放影像
+                //把檔案用非同步的方式載到記憶體中
+                mp.prepareAsync();
+                mp.start();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        timeSeekBar();
+                    }
+                }).start();
+                btnPlay.setText("暫停");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else {
+            if (mp.isPlaying()) {
+                mp.pause();
+                btnPlay.setText("播放");
+            } else {
+                mp.start();
+                btnPlay.setText("暫停");
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        timeSeekBar();
+                    }
+                }).start();
+            }
+        }
+
+    }
+
     public void onStop(View v){
         if(mp!=null) {
             mp.stop();
@@ -122,6 +167,20 @@ public class MainActivity extends AppCompatActivity {
             btnPlay.setText("播放");
         }
     }
+
+    MediaPlayer.OnPreparedListener preparedListener=new MediaPlayer.OnPreparedListener() {
+        @Override
+        public void onPrepared(MediaPlayer mediaPlayer) {
+            mp.start();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    timeSeekBar();
+                }
+            }).start();
+            btnPlay.setText("暫停");
+        }
+    };
 
     void timeSeekBar(){
         if(mp!=null) {
