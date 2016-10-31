@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         tvTime=(TextView)findViewById(R.id.textView);
         btnPlay=(Button)findViewById(R.id.button);
         cbIsLoop=(CheckBox)findViewById(R.id.checkBox);
+        cbIsLoop.setOnCheckedChangeListener(checkedChangeListener);
     }
 
     public void onPlay(View v){
@@ -120,11 +122,13 @@ public class MainActivity extends AppCompatActivity {
             seekBar.setMax(duration); //取得這首歌的總長度millisecond
             while(mp!=null && mp.isPlaying()) {
                 //把現在播放的秒數更新到SeekBar
-                handler.sendEmptyMessage(mp.getCurrentPosition());
                 try {
+                    handler.sendEmptyMessage(mp.getCurrentPosition());
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                } catch (NullPointerException e){
+
                 }
             }
         }
@@ -134,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
     SeekBar.OnSeekBarChangeListener seekBarChangeListener=new SeekBar.OnSeekBarChangeListener() {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            if(fromUser){
+            if(fromUser){ //判斷是不是使用者做拖拉的動作
                 mp.seekTo(progress);
             }
         }
@@ -147,6 +151,15 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
 
+        }
+    };
+
+    CompoundButton.OnCheckedChangeListener checkedChangeListener=new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+            if(mp!=null){
+                mp.setLooping(b);
+            }
         }
     };
 
