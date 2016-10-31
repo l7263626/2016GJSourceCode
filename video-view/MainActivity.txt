@@ -1,0 +1,61 @@
+package com.hui.class15_mediaplayer;
+
+import android.media.MediaPlayer;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.SeekBar;
+import android.widget.TextView;
+
+public class MainActivity extends AppCompatActivity {
+    SeekBar seekBar;
+    TextView tvTime;
+    Button btnPlay;
+    CheckBox cbIsLoop;
+    MediaPlayer mp;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        findviews();
+    }
+
+    void findviews(){
+        seekBar=(SeekBar)findViewById(R.id.seekBar);
+        tvTime=(TextView)findViewById(R.id.textView);
+        btnPlay=(Button)findViewById(R.id.button);
+        cbIsLoop=(CheckBox)findViewById(R.id.checkBox);
+    }
+
+    public void onPlay(View v){
+        staticPlayer();
+        
+    }
+    public void onStop(View v){
+        if(mp!=null) {
+            mp.stop();
+        }
+    }
+    
+    void staticPlayer(){
+        if(mp==null) {
+            mp = MediaPlayer.create(this, R.raw.littlemonster);
+            mp.start();
+        }
+    }
+    
+    
+    
+    public void onRaise(View v){
+
+    }
+
+    public void onLower(View v){
+
+    }
+
+
+}
