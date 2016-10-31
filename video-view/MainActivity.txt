@@ -1,6 +1,8 @@
 package com.hui.class15_mediaplayer;
 
 import android.media.MediaPlayer;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,12 +18,20 @@ public class MainActivity extends AppCompatActivity {
     Button btnPlay;
     CheckBox cbIsLoop;
     MediaPlayer mp;
+    Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         findviews();
+        handler=new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                seekBar.setProgress(msg.what);
+            }
+        };
     }
 
     void findviews(){
@@ -34,15 +44,6 @@ public class MainActivity extends AppCompatActivity {
     public void onPlay(View v){
         staticPlayer();
 
-    }
-    public void onStop(View v){
-        if(mp!=null) {
-            Log.d("Media",mp.toString());
-            mp.stop();
-            mp.release();
-            mp=null;
-            btnPlay.setText("播放");
-        }
     }
 
     void staticPlayer(){
@@ -61,7 +62,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
+    public void onStop(View v){
+        if(mp!=null) {
+            mp.stop();
+            mp.release();
+            mp=null;
+            btnPlay.setText("播放");
+        }
+    }
 
     public void onRaise(View v){
 
