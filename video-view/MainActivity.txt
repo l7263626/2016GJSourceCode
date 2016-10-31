@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
             mp.stop();
             mp.release();
             mp=null;
-            btnPlay.setText("¼½©ñ");
+            btnPlay.setText("æ’­æ”¾");
         }
     }
 
@@ -49,14 +49,14 @@ public class MainActivity extends AppCompatActivity {
         if(mp==null) {
             mp = MediaPlayer.create(this, R.raw.littlemonster);
             mp.start();
-            btnPlay.setText("¼È°±");
+            btnPlay.setText("æš«åœ");
         }else {
             if (mp.isPlaying()) {
                 mp.pause();
-                btnPlay.setText("¼½©ñ");
+                btnPlay.setText("æ’­æ”¾");
             } else {
                 mp.start();
-                btnPlay.setText("¼È°±");
+                btnPlay.setText("æš«åœ");
             }
         }
     }
