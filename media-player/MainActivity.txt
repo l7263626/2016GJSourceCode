@@ -246,11 +246,13 @@ public class MainActivity extends AppCompatActivity {
     public void onRaise(View v){
         audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,AudioManager.ADJUST_RAISE,AudioManager.FLAG_PLAY_SOUND);
         tvSound.setText(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)+" / "+audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+        sbSound.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
     }
 
     public void onLower(View v){
         audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,AudioManager.ADJUST_LOWER,AudioManager.FLAG_PLAY_SOUND);
         tvSound.setText(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)+" / "+audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+        sbSound.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
     }
 
 
