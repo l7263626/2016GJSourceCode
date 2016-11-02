@@ -75,98 +75,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onPlay(View v){
-//        staticPlayer();
-//        callExternal();
-        callInternet();
-    }
-
-    void staticPlayer(){
-        if(mp==null) {
-            mp = MediaPlayer.create(this, R.raw.littlemonster);
-            mp.start();
-            btnPlay.setText("暫停");
-        }else {
-            if (mp.isPlaying()) {
-                mp.pause();
-                btnPlay.setText("播放");
-            } else {
-                mp.start();
-                btnPlay.setText("暫停");
-            }
-        }
-    }
-
-    void callExternal(){
-        File path= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
-        File file=new File(path,"littlemonster.3gp"); //取得外部路徑檔案
-
         if(mp==null){
-            mp=new MediaPlayer();
-            mp.setOnPreparedListener(preparedListener);
-            try {
-                mp.setDataSource(file.toString());  //設定多媒體檔案來源
-                mp.setDisplay(surfaceHolder);  //利用SurfaceView來播放影像
-                mp.prepare();  //把檔案載到記憶體中
-                mp.start();
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        timeSeekBar();
-                    }
-                }).start();
-                btnPlay.setText("暫停");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }else {
+            //建立Mediaplayer物件並設定相關的設定
+//            staticPlayer();
+//            callExternal();
+            callInternet();
+            
+        }else{
             if (mp.isPlaying()) {
                 mp.pause();
                 btnPlay.setText("播放");
             } else {
                 mp.start();
                 btnPlay.setText("暫停");
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        timeSeekBar();
-                    }
-                }).start();
             }
         }
-    }
-
-    void callInternet(){
-        //多媒體檔案的網址
-//        String strUrl="http://www.youtube-mp3.org/get?video_id=9lZu4d_S-BM&ts_create=1477919756&r=MTIyLjExNy45LjE3NQ%3D%3D&h2=bbefc01a755252270d0b28e246bc56ab&s=151349";
-        String strUrl="https://r6---sn-25glen7e.googlevideo.com/videoplayback?gir=yes&source=youtube&nh=IgpwcjAyLnBhcjAxKg03Mi4xNC4yMTguMTgz&itag=18&pl=20&dur=217.060&mime=video%2Fmp4&expire=1478106740&sparams=clen%2Cdur%2Cei%2Cgir%2Cid%2Cinitcwndbps%2Cip%2Cipbits%2Citag%2Clmt%2Cmime%2Cmm%2Cmn%2Cms%2Cmv%2Cnh%2Cpl%2Cratebypass%2Crequiressl%2Csource%2Cupn%2Cusequic%2Cexpire&ratebypass=yes&signature=AFD2E5ADCDA4B81DC1D9934AC9D8289AF3E7B34F.31A239BF2C55B5F3C27C79B7CC1CAA8258F06DD9&initcwndbps=3597500&clen=10049886&ipbits=0&mv=m&mt=1478084938&ms=au&ip=62.210.157.29&key=yt6&usequic=no&upn=Af0rN5b0pfY&mn=sn-25glen7e&mm=31&id=o-AEvn5_ibsH5H4aRvQphdgGzdxz3Z9v5P-PaNlM6Ou8z0&ei=FMoZWKHiBKnxiwa8tqywDg&lmt=1458199363534060&requiressl=yes&title=%E3%80%90%E5%86%B0%E9%9B%AA%E5%A5%87%E7%B7%A3%E3%80%91Let%20It%20Go";
-        if(mp==null){
-            mp=new MediaPlayer();
-            mp.setOnPreparedListener(preparedListener);
-            try {
-                //設定多媒體檔案來源
-                mp.setDataSource(strUrl);
-                mp.setDisplay(surfaceHolder);  //利用SurfaceView來播放影像
-                //把檔案用非同步的方式載到記憶體中
-                mp.prepareAsync();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }else {
-            if (mp.isPlaying()) {
-                mp.pause();
-                btnPlay.setText("播放");
-            } else {
-                mp.start();
-                btnPlay.setText("暫停");
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        timeSeekBar();
-                    }
-                }).start();
-            }
-        }
-
+        
     }
 
     public void onStop(View v){
@@ -178,37 +102,84 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    void staticPlayer(){       
+        mp = MediaPlayer.create(this, R.raw.littlemonster);
+        mp.start();
+        btnPlay.setText("暫停");        
+    }
+
+    void callExternal(){
+        File path= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
+        File file=new File(path,"littlemonster.3gp"); //取得外部路徑檔案        
+        mp=new MediaPlayer();
+        try {
+            mp.setDataSource(file.toString());  //設定多媒體檔案來源
+            mp.setDisplay(surfaceHolder);  //利用SurfaceView來播放影像
+            mp.prepare();  //把檔案載到記憶體中
+            mp.start();
+            btnPlay.setText("暫停");
+            
+            timeSeekBar();           
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void callInternet(){
+        //多媒體檔案的網址
+//        String strUrl="http://www.youtube-mp3.org/get?video_id=9lZu4d_S-BM&ts_create=1477919756&r=MTIyLjExNy45LjE3NQ%3D%3D&h2=bbefc01a755252270d0b28e246bc56ab&s=151349";
+        String strUrl="https://r6---sn-25glen7e.googlevideo.com/videoplayback?gir=yes&source=youtube&nh=IgpwcjAyLnBhcjAxKg03Mi4xNC4yMTguMTgz&itag=18&pl=20&dur=217.060&mime=video%2Fmp4&expire=1478106740&sparams=clen%2Cdur%2Cei%2Cgir%2Cid%2Cinitcwndbps%2Cip%2Cipbits%2Citag%2Clmt%2Cmime%2Cmm%2Cmn%2Cms%2Cmv%2Cnh%2Cpl%2Cratebypass%2Crequiressl%2Csource%2Cupn%2Cusequic%2Cexpire&ratebypass=yes&signature=AFD2E5ADCDA4B81DC1D9934AC9D8289AF3E7B34F.31A239BF2C55B5F3C27C79B7CC1CAA8258F06DD9&initcwndbps=3597500&clen=10049886&ipbits=0&mv=m&mt=1478084938&ms=au&ip=62.210.157.29&key=yt6&usequic=no&upn=Af0rN5b0pfY&mn=sn-25glen7e&mm=31&id=o-AEvn5_ibsH5H4aRvQphdgGzdxz3Z9v5P-PaNlM6Ou8z0&ei=FMoZWKHiBKnxiwa8tqywDg&lmt=1458199363534060&requiressl=yes&title=%E3%80%90%E5%86%B0%E9%9B%AA%E5%A5%87%E7%B7%A3%E3%80%91Let%20It%20Go";
+        
+        mp=new MediaPlayer();
+        mp.setOnPreparedListener(preparedListener);
+        try {
+            //設定多媒體檔案來源
+            mp.setDataSource(strUrl);
+            mp.setDisplay(surfaceHolder);  //利用SurfaceView來播放影像
+            //把檔案用非同步的方式載到記憶體中
+            mp.prepareAsync();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        
+
+    }
+
+    
+
     MediaPlayer.OnPreparedListener preparedListener=new MediaPlayer.OnPreparedListener() {
         @Override
         public void onPrepared(MediaPlayer mediaPlayer) {
             mp.start();
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    timeSeekBar();
-                }
-            }).start();
             btnPlay.setText("暫停");
+            
+            timeSeekBar();   
         }
     };
 
     void timeSeekBar(){
         if(mp!=null) {
-            duration = mp.getDuration();
-            sbTime.setMax(duration); //取得這首歌的總長度millisecond
-            while(mp!=null && mp.isPlaying()) {
-                //把現在播放的秒數更新到SeekBar
-                try {
-                    handler.sendEmptyMessage(mp.getCurrentPosition());
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (NullPointerException e){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    duration = mp.getDuration();
+                    sbTime.setMax(duration); //取得這首歌的總長度millisecond
+                    while(mp!=null && mp.isPlaying()) {
+                        //把現在播放的秒數更新到SeekBar
+                        try {
+                            handler.sendEmptyMessage(mp.getCurrentPosition());
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } catch (NullPointerException e){
 
+                        }
+                    }
                 }
-            }
+            }).start();            
         }
-
     }
 
     SeekBar.OnSeekBarChangeListener seekBarChangeListener=new SeekBar.OnSeekBarChangeListener() {
@@ -246,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
             }
             if(compoundButton.getId()==cbMute.getId()){
                 audioManager.setStreamMute(AudioManager.STREAM_MUSIC,b);
-                if(b) {                    
+                if(b) {
                     //API23 才改成用以下的方法
 //                    audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,AudioManager.ADJUST_MUTE,AudioManager.FLAG_PLAY_SOUND);
                 }else{
