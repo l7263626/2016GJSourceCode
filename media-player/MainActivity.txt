@@ -82,29 +82,29 @@ public class MainActivity extends AppCompatActivity {
         if(mp==null) {
             mp = MediaPlayer.create(this, R.raw.littlemonster);
             mp.start();
-            btnPlay.setText("¼È°±");
+            btnPlay.setText("æš«åœ");
         }else {
             if (mp.isPlaying()) {
                 mp.pause();
-                btnPlay.setText("¼½©ñ");
+                btnPlay.setText("æ’­æ”¾");
             } else {
                 mp.start();
-                btnPlay.setText("¼È°±");
+                btnPlay.setText("æš«åœ");
             }
         }
     }
 
     void callExternal(){
         File path= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
-        File file=new File(path,"littlemonster.3gp"); //¨ú±o¥~³¡¸ô®|ÀÉ®×
+        File file=new File(path,"littlemonster.3gp"); //å–å¾—å¤–éƒ¨è·¯å¾‘æª”æ¡ˆ
 
         if(mp==null){
             mp=new MediaPlayer();
             mp.setOnPreparedListener(preparedListener);
             try {
-                mp.setDataSource(file.toString());  //³]©w¦h´CÅéÀÉ®×¨Ó·½
-                mp.setDisplay(surfaceHolder);  //§Q¥ÎSurfaceView¨Ó¼½©ñ¼v¹³
-                mp.prepare();  //§âÀÉ®×¸ü¨ì°O¾ĞÅé¤¤
+                mp.setDataSource(file.toString());  //è¨­å®šå¤šåª’é«”æª”æ¡ˆä¾†æº
+                mp.setDisplay(surfaceHolder);  //åˆ©ç”¨SurfaceViewä¾†æ’­æ”¾å½±åƒ
+                mp.prepare();  //æŠŠæª”æ¡ˆè¼‰åˆ°è¨˜æ†¶é«”ä¸­
                 mp.start();
                 new Thread(new Runnable() {
                     @Override
@@ -112,17 +112,17 @@ public class MainActivity extends AppCompatActivity {
                         timeSeekBar();
                     }
                 }).start();
-                btnPlay.setText("¼È°±");
+                btnPlay.setText("æš«åœ");
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }else {
             if (mp.isPlaying()) {
                 mp.pause();
-                btnPlay.setText("¼½©ñ");
+                btnPlay.setText("æ’­æ”¾");
             } else {
                 mp.start();
-                btnPlay.setText("¼È°±");
+                btnPlay.setText("æš«åœ");
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -134,17 +134,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void callInternet(){
-        //¦h´CÅéÀÉ®×ªººô§}
+        //å¤šåª’é«”æª”æ¡ˆçš„ç¶²å€
 //        String strUrl="http://www.youtube-mp3.org/get?video_id=9lZu4d_S-BM&ts_create=1477919756&r=MTIyLjExNy45LjE3NQ%3D%3D&h2=bbefc01a755252270d0b28e246bc56ab&s=151349";
         String strUrl="http://www.youtubecomtomp3.com?task=MP4&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3Df4vkq2ztxSw";
         if(mp==null){
             mp=new MediaPlayer();
             mp.setOnPreparedListener(preparedListener);
             try {
-                //³]©w¦h´CÅéÀÉ®×¨Ó·½
+                //è¨­å®šå¤šåª’é«”æª”æ¡ˆä¾†æº
                 mp.setDataSource(strUrl);
-                mp.setDisplay(surfaceHolder);  //§Q¥ÎSurfaceView¨Ó¼½©ñ¼v¹³
-                //§âÀÉ®×¥Î«D¦P¨Bªº¤è¦¡¸ü¨ì°O¾ĞÅé¤¤
+                mp.setDisplay(surfaceHolder);  //åˆ©ç”¨SurfaceViewä¾†æ’­æ”¾å½±åƒ
+                //æŠŠæª”æ¡ˆç”¨éåŒæ­¥çš„æ–¹å¼è¼‰åˆ°è¨˜æ†¶é«”ä¸­
                 mp.prepareAsync();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -152,10 +152,10 @@ public class MainActivity extends AppCompatActivity {
         }else {
             if (mp.isPlaying()) {
                 mp.pause();
-                btnPlay.setText("¼½©ñ");
+                btnPlay.setText("æ’­æ”¾");
             } else {
                 mp.start();
-                btnPlay.setText("¼È°±");
+                btnPlay.setText("æš«åœ");
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
             mp.stop();
             mp.release();
             mp=null;
-            btnPlay.setText("¼½©ñ");
+            btnPlay.setText("æ’­æ”¾");
         }
     }
 
@@ -186,16 +186,16 @@ public class MainActivity extends AppCompatActivity {
                     timeSeekBar();
                 }
             }).start();
-            btnPlay.setText("¼È°±");
+            btnPlay.setText("æš«åœ");
         }
     };
 
     void timeSeekBar(){
         if(mp!=null) {
             duration = mp.getDuration();
-            seekBar.setMax(duration); //¨ú±o³o­ººqªºÁ`ªø«×millisecond
+            seekBar.setMax(duration); //å–å¾—é€™é¦–æ­Œçš„ç¸½é•·åº¦millisecond
             while(mp!=null && mp.isPlaying()) {
-                //§â²{¦b¼½©ñªº¬í¼Æ§ó·s¨ìSeekBar
+                //æŠŠç¾åœ¨æ’­æ”¾çš„ç§’æ•¸æ›´æ–°åˆ°SeekBar
                 try {
                     handler.sendEmptyMessage(mp.getCurrentPosition());
                     Thread.sleep(100);
@@ -212,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
     SeekBar.OnSeekBarChangeListener seekBarChangeListener=new SeekBar.OnSeekBarChangeListener() {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            if(fromUser){ //§PÂ_¬O¤£¬O¨Ï¥ÎªÌ°µ©ì©Ôªº°Ê§@
+            if(fromUser){ //åˆ¤æ–·æ˜¯ä¸æ˜¯ä½¿ç”¨è€…åšæ‹–æ‹‰çš„å‹•ä½œ
                 mp.seekTo(progress);
             }
         }
