@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
         surfaceView=(SurfaceView)findViewById(R.id.surfaceView);
         surfaceHolder=surfaceView.getHolder();
-        
+
         btnRec=(Button)findViewById(R.id.button5);
     }
 
@@ -81,8 +81,8 @@ public class MainActivity extends AppCompatActivity {
         if(mp==null){
             //建立Mediaplayer物件並設定相關的設定
 //            staticPlayer();
-//            callExternal();
-            callInternet();
+            callExternal();
+//            callInternet();
 
         }else{
             if (mp.isPlaying()) {
@@ -112,8 +112,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void callExternal(){
-        File path= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
-        File file=new File(path,"littlemonster.3gp"); //取得外部路徑檔案
+        File path= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
+        File file=new File(path,"myRec.3gp"); //取得外部路徑檔案
         mp=new MediaPlayer();
         try {
             mp.setDataSource(file.toString());  //設定多媒體檔案來源
@@ -246,20 +246,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //錄音功能的部份
+    boolean isRec=false;
+    MediaRecorder mr;
     public void onRecord(View v){
-        File path=Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
-        File file=new File(path,"myRec.3gp");
-        MediaRecorder mr=new MediaRecorder();
-        mr.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mr.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mr.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_WB);
-        mr.setOutputFile(file.toString());
-        try {
-            mr.prepare();
-            mr.start();
-            btnRec.setText("停止錄音");
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(isRec){
+            if(mr!=null){
+                mr.stop();
+                mr.release();
+                mr=null;
+                btnRec.setText("錄音");
+            }
+
+        }else {
+            File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
+            File file = new File(path, "myRec.3gp");
+            mr = new MediaRecorder();
+            mr.setAudioSource(MediaRecorder.AudioSource.MIC);
+            mr.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            mr.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_WB);
+            mr.setOutputFile(file.toString());
+            try {
+                mr.prepare();
+                mr.start();
+                btnRec.setText("停止錄音");
+                isRec=true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
     }
