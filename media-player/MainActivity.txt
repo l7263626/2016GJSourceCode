@@ -239,20 +239,38 @@ public class MainActivity extends AppCompatActivity {
     CompoundButton.OnCheckedChangeListener checkedChangeListener=new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-            if(mp!=null){
-                mp.setLooping(b);
+            if(compoundButton.getId()==cbIsLoop.getId()) {
+                if (mp != null) {
+                    mp.setLooping(b);
+                }
+            }
+            if(compoundButton.getId()==cbMute.getId()){
+                audioManager.setStreamMute(AudioManager.STREAM_MUSIC,b);
+                if(b) {                    
+                    //API23 才改成用以下的方法
+//                    audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,AudioManager.ADJUST_MUTE,AudioManager.FLAG_PLAY_SOUND);
+                }else{
+                    //API23 才改成用以下的方法
+//                    audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,AudioManager.ADJUST_UNMUTE,AudioManager.FLAG_PLAY_SOUND);
+                }
             }
         }
     };
 
     public void onRaise(View v){
         audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,AudioManager.ADJUST_RAISE,AudioManager.FLAG_PLAY_SOUND);
+        if(cbMute.isChecked()){
+            cbMute.setChecked(false);
+        }
         tvSound.setText(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)+" / "+audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
         sbSound.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
     }
 
     public void onLower(View v){
         audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,AudioManager.ADJUST_LOWER,AudioManager.FLAG_PLAY_SOUND);
+        if(cbMute.isChecked()){
+            cbMute.setChecked(false);
+        }
         tvSound.setText(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)+" / "+audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
         sbSound.setProgress(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
     }
