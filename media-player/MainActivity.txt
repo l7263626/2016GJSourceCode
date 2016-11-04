@@ -263,6 +263,7 @@ public class MainActivity extends AppCompatActivity {
                 mr.release();
                 mr=null;
                 btnRec.setText("錄音");
+                isRec=false;
 
                 //開對話視窗
                 View myView=getLayoutInflater().inflate(R.layout.dialog_view,null);
