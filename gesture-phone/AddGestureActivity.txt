@@ -1,0 +1,56 @@
+package com.hui.class19_gesturephone;
+
+import android.gesture.Gesture;
+import android.gesture.GestureLibraries;
+import android.gesture.GestureLibrary;
+import android.gesture.GestureOverlayView;
+import android.os.Environment;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
+
+import java.io.File;
+
+public class AddGestureActivity extends AppCompatActivity {
+    EditText etPhoneNum,etGestureName;
+    GestureOverlayView overlayView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_addgesture);
+        findviews();
+    }
+
+    void findviews(){
+        overlayView=(GestureOverlayView)findViewById(R.id.gestureOverlayView);
+        etPhoneNum=(EditText)findViewById(R.id.editText);
+        etGestureName=(EditText)findViewById(R.id.editText2);
+    }
+
+    public void addGesture(View v){
+        //內部私有區
+//        GestureLibrary library= GestureLibraries.fromPrivateFile(this,"myGesture");
+        //外部公開區
+        File path= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
+        File file=new File(path,"myGesture");
+        GestureLibrary library=GestureLibraries.fromFile(file);
+        //讀取舊有的手勢
+        if(library.load()){
+            Gesture gesture=overlayView.getGesture();
+            library.addGesture(etGestureName.getText().toString(),gesture);
+            library.save();
+        }else{ //這是第一次還沒有建立手勢檔時做的方式
+            Gesture gesture=overlayView.getGesture();
+            library.addGesture(etGestureName.getText().toString(),gesture);
+            library.save();
+        }
+
+
+    }
+
+    public void clearGesture(View v){
+
+    }
+}
