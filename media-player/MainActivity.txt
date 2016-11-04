@@ -24,6 +24,8 @@ package com.hui.class15_mediaplayer;
 
         import java.io.File;
         import java.io.IOException;
+        import java.text.SimpleDateFormat;
+        import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
     SeekBar sbTime,sbSound;
@@ -253,6 +255,7 @@ public class MainActivity extends AppCompatActivity {
     boolean isRec=false;
     MediaRecorder mr;
     EditText etFileName;
+    String fileName;
     public void onRecord(View v){
         if(isRec){
             if(mr!=null){
@@ -264,13 +267,17 @@ public class MainActivity extends AppCompatActivity {
                 //開對話視窗
                 View myView=getLayoutInflater().inflate(R.layout.dialog_view,null);
                 etFileName=(EditText)myView.findViewById(R.id.editText);
+                etFileName.setText(fileName);
+                final File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
+                final File file = new File(path, fileName);
                 new AlertDialog.Builder(this)
                         .setTitle("更改檔案名稱")
                         .setView(myView)
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-
+                                File newName=new File(path,etFileName.getText().toString());
+                                file.renameTo(newName);
                             }
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -280,17 +287,21 @@ public class MainActivity extends AppCompatActivity {
                             }
                         })
                         .show();
-                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
-                File file = new File(path, "myRec.3gp");
 
-                File newName=new File(path,etfilename.getText)
-                file.renameTo(newName)
+
+                
+
+                
 
             }
 
         }else {
+            Date date=new Date();
+            SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMddHHmmss");
+            String strDate=sdf.format(date);
+            fileName="Rec"+strDate+".3gp";
             File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
-            File file = new File(path, "myRec.3gp");
+            File file = new File(path, fileName);
             mr = new MediaRecorder();
             mr.setAudioSource(MediaRecorder.AudioSource.MIC);
             mr.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
