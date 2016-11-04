@@ -7,14 +7,18 @@ import android.gesture.GestureOverlayView;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.io.File;
 
 public class AddGestureActivity extends AppCompatActivity {
     EditText etPhoneNum,etGestureName;
     GestureOverlayView overlayView;
+    Button btnAdd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,9 +29,43 @@ public class AddGestureActivity extends AppCompatActivity {
 
     void findviews(){
         overlayView=(GestureOverlayView)findViewById(R.id.gestureOverlayView);
+        overlayView.addOnGestureListener(gestureListener);
         etPhoneNum=(EditText)findViewById(R.id.editText);
         etGestureName=(EditText)findViewById(R.id.editText2);
+        btnAdd=(Button)findViewById(R.id.button3);
     }
+
+    GestureOverlayView.OnGestureListener gestureListener=new GestureOverlayView.OnGestureListener() {
+        @Override
+        public void onGestureStarted(GestureOverlayView gestureOverlayView, MotionEvent motionEvent) {
+            btnAdd.setEnabled(false);
+        }
+
+        @Override
+        public void onGesture(GestureOverlayView gestureOverlayView, MotionEvent motionEvent) {
+
+        }
+
+        @Override
+        public void onGestureEnded(GestureOverlayView gestureOverlayView, MotionEvent motionEvent) {
+            String strPhoneNum=etPhoneNum.getText().toString();
+            String strGestureName=etGestureName.getText().toString();
+            if(strPhoneNum.equals("") || strGestureName.equals("")){
+                Toast.makeText(AddGestureActivity.this, "欄位不能空白", Toast.LENGTH_SHORT).show();
+            }else{
+                btnAdd.setEnabled(true);
+            }
+//            if(strGestureName.equals("")){
+//                Toast.makeText(AddGestureActivity.this, "請輸入手勢名稱", Toast.LENGTH_SHORT).show();
+//            }
+
+        }
+
+        @Override
+        public void onGestureCancelled(GestureOverlayView gestureOverlayView, MotionEvent motionEvent) {
+
+        }
+    };
 
     public void addGesture(View v){
         //內部私有區
@@ -38,10 +76,12 @@ public class AddGestureActivity extends AppCompatActivity {
         GestureLibrary library=GestureLibraries.fromFile(file);
         //讀取舊有的手勢
         if(library.load()){
+            //若有之前的手勢檔則先讀取後再儲存，否則只會儲入最後一個手勢
             Gesture gesture=overlayView.getGesture();
             library.addGesture(etGestureName.getText().toString(),gesture);
             library.save();
-        }else{ //這是第一次還沒有建立手勢檔時做的方式
+        }else{
+            //這是第一次還沒有建立手勢檔時做的方式
             Gesture gesture=overlayView.getGesture();
             library.addGesture(etGestureName.getText().toString(),gesture);
             library.save();
@@ -51,6 +91,6 @@ public class AddGestureActivity extends AppCompatActivity {
     }
 
     public void clearGesture(View v){
-
+        overlayView.clear(true);
     }
 }
