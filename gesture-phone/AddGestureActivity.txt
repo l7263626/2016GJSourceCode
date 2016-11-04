@@ -28,7 +28,7 @@ public class AddGestureActivity extends AppCompatActivity {
     }
 
     void findviews(){
-        overlayView=(GestureOverlayView)findViewById(R.id.gestureOverlayView);
+        overlayView=(GestureOverlayView)findViewById(R.id.gestureOverlayView2);
         overlayView.addOnGestureListener(gestureListener);
         etPhoneNum=(EditText)findViewById(R.id.editText);
         etGestureName=(EditText)findViewById(R.id.editText2);
