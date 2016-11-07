@@ -1,5 +1,6 @@
 package com.hui.class19_gesturephone;
 
+import android.content.SharedPreferences;
 import android.gesture.Gesture;
 import android.gesture.GestureLibraries;
 import android.gesture.GestureLibrary;
@@ -51,12 +52,12 @@ public class AddGestureActivity extends AppCompatActivity {
             String strPhoneNum=etPhoneNum.getText().toString();
             String strGestureName=etGestureName.getText().toString();
             if(strPhoneNum.equals("") || strGestureName.equals("")){
-                Toast.makeText(AddGestureActivity.this, "Äæ¦ì¤£¯àªÅ¥Õ", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddGestureActivity.this, "æ¬„ä½ä¸èƒ½ç©ºç™½", Toast.LENGTH_SHORT).show();
             }else{
                 btnAdd.setEnabled(true);
             }
 //            if(strGestureName.equals("")){
-//                Toast.makeText(AddGestureActivity.this, "½Ğ¿é¤J¤â¶Õ¦WºÙ", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(AddGestureActivity.this, "è«‹è¼¸å…¥æ‰‹å‹¢åç¨±", Toast.LENGTH_SHORT).show();
 //            }
 
         }
@@ -68,26 +69,33 @@ public class AddGestureActivity extends AppCompatActivity {
     };
 
     public void addGesture(View v){
-        //¤º³¡¨p¦³°Ï
+        //å…§éƒ¨ç§æœ‰å€
 //        GestureLibrary library= GestureLibraries.fromPrivateFile(this,"myGesture");
-        //¥~³¡¤½¶}°Ï
+        //å¤–éƒ¨å…¬é–‹å€
         File path= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
         File file=new File(path,"myGesture");
         GestureLibrary library=GestureLibraries.fromFile(file);
-        //Åª¨úÂÂ¦³ªº¤â¶Õ
+        //è®€å–èˆŠæœ‰çš„æ‰‹å‹¢
         if(library.load()){
-            //­Y¦³¤§«eªº¤â¶ÕÀÉ«h¥ıÅª¨ú«á¦AÀx¦s¡A§_«h¥u·|Àx¤J³Ì«á¤@­Ó¤â¶Õ
+            //è‹¥æœ‰ä¹‹å‰çš„æ‰‹å‹¢æª”å‰‡å…ˆè®€å–å¾Œå†å„²å­˜ï¼Œå¦å‰‡åªæœƒå„²å…¥æœ€å¾Œä¸€å€‹æ‰‹å‹¢
             Gesture gesture=overlayView.getGesture();
             library.addGesture(etGestureName.getText().toString(),gesture);
             library.save();
         }else{
-            //³o¬O²Ä¤@¦¸ÁÙ¨S¦³«Ø¥ß¤â¶ÕÀÉ®É°µªº¤è¦¡
+            //é€™æ˜¯ç¬¬ä¸€æ¬¡é‚„æ²’æœ‰å»ºç«‹æ‰‹å‹¢æª”æ™‚åšçš„æ–¹å¼
             Gesture gesture=overlayView.getGesture();
             library.addGesture(etGestureName.getText().toString(),gesture);
             library.save();
         }
 
-
+        //å­˜å…¥è³‡æ–™åˆ°SharedPrefereces
+        String strPhoneNum=etPhoneNum.getText().toString();
+        String strGestureName=etGestureName.getText().toString();        
+        SharedPreferences phoneBook=getSharedPreferences("phoneBook",MODE_PRIVATE);
+        SharedPreferences.Editor editor=phoneBook.edit();
+        editor.putString(strGestureName,strPhoneNum);
+        editor.commit();
+        Toast.makeText(this,"æ‰‹å‹¢å·²å„²å­˜",Toast.LENGTH_SHORT).show();
     }
 
     public void clearGesture(View v){
