@@ -1,0 +1,55 @@
+package com.hui.class19_gesturephone;
+
+import android.content.SharedPreferences;
+import android.gesture.Gesture;
+import android.gesture.GestureLibraries;
+import android.gesture.GestureLibrary;
+import android.graphics.Color;
+import android.os.Environment;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.widget.ListView;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
+
+public class ListGestureActivity extends AppCompatActivity {
+    ListView lv;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_listgesture);
+        findviews();
+        showListview();
+    }
+
+    void findviews(){
+        lv=(ListView)findViewById(R.id.listView);
+    }
+
+    void showListview(){
+        File path= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
+        File file=new File(path,"myGesture");
+        GestureLibrary library= GestureLibraries.fromFile(file);
+        SharedPreferences phoneBook=getSharedPreferences("phoneBook",MODE_PRIVATE);
+
+        Set<String> gesNames=library.getGestureEntries(); //取得手勢庫裡的所有手勢名稱
+        ArrayList<HashMap<String,Object>> data=new ArrayList<>(); //要傳給BaseAdpater的資料
+        
+        for(String gesName:gesNames){
+            //用手勢名稱取得相同手勢名稱的手勢
+            ArrayList<Gesture> gestures=library.getGestures(gesName); 
+            for(Gesture ges:gestures){
+                HashMap<String,Object> items=new HashMap<>();
+                items.put("gesPic",ges.toBitmap(100,100,5, Color.BLUE)); //把手勢轉換成Bitmap
+                items.put("gesName",gesName); //存入手勢名稱
+                items.put("phoneNum",phoneBook.getString(gesName,"")); //存入電話號碼
+
+                data.add(items);
+            }
+        }
+    }
+}
