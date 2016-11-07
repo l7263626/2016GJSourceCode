@@ -38,14 +38,19 @@ public class MainActivity extends AppCompatActivity {
     GestureOverlayView.OnGesturePerformedListener performedListener = new GestureOverlayView.OnGesturePerformedListener() {
         @Override
         public void onGesturePerformed(GestureOverlayView gestureOverlayView, Gesture gesture) {
-            File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
-            File file = new File(path, "myGesture");
-            GestureLibrary library = GestureLibraries.fromFile(file);
-            library.load();
-            SharedPreferences phoneBook = getSharedPreferences("phoneBook", MODE_PRIVATE);
-            ArrayList<Prediction> predictions = library.recognize(gesture);
+            performCallPhone(gesture);
+        }
+    };
+    
+    void performCallPhone(Gesture gesture){
+        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
+        File file = new File(path, "myGesture");
+        GestureLibrary library = GestureLibraries.fromFile(file);
+        library.load();
+        SharedPreferences phoneBook = getSharedPreferences("phoneBook", MODE_PRIVATE);
+        ArrayList<Prediction> predictions = library.recognize(gesture);
 
-            //測試用的Code
+        //測試用的Code
 //            StringBuilder sb=new StringBuilder();
 //            for(Prediction p:predictions){
 //                sb.append(p.name).append(" - ").append(p.score).append("\n");
@@ -53,30 +58,29 @@ public class MainActivity extends AppCompatActivity {
 //            Toast.makeText(MainActivity.this,sb,Toast.LENGTH_SHORT).show();
 
 
-            String gesName = predictions.get(0).name;
-            String strPhone = phoneBook.getString(gesName, "");
-            //到撥出電話的畫面
+        String gesName = predictions.get(0).name;
+        String strPhone = phoneBook.getString(gesName, "");
+        //到撥出電話的畫面
 //            Intent intent=new Intent(Intent.ACTION_VIEW);  //開啟畫面
 //            intent.setData(Uri.parse("tel:"+strPhone));
 //            startActivity(intent);
 
-            //直接撥出電話要加上uses-permission
-            //<uses-permission android:name="android.permission.CALL_PHONE"/>
-            Intent intent = new Intent(Intent.ACTION_CALL); //直接撥出電話
-            intent.setData(Uri.parse("tel:" + strPhone));
-            if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
-            startActivity(intent);
+        //直接撥出電話要加上uses-permission
+        //<uses-permission android:name="android.permission.CALL_PHONE"/>
+        Intent intent = new Intent(Intent.ACTION_CALL); //直接撥出電話
+        intent.setData(Uri.parse("tel:" + strPhone));
+        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
         }
-    };
+        startActivity(intent);
+    }
 
     public void addGesture(View v){
         Intent intent=new Intent(MainActivity.this,AddGestureActivity.class);
